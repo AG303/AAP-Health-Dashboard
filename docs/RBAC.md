@@ -1,8 +1,15 @@
 # Read-only access model
 
-The dashboard needs nothing more than read-only tokens. This is enforced in three layers:
+The dashboards need nothing more than read-only tokens, and each script uses only its own:
 
-1. **Code.** The `Http` class can only send `GET` (the method is a class constant handed to
+| Script | Token | Never needs |
+|---|---|---|
+| `aap_health_dashboard.py` | AAP OAuth token (`aap_token_env`), scope read, Platform Auditor | any OpenShift credential |
+| `ocp_health_dashboard.py` | ServiceAccount `aap-health-reader` token (`ocp_token_env`, optional `prometheus_token_env`) | any AAP credential |
+
+Read-only access is enforced in three layers:
+
+1. **Code.** The `Http` class in `healthdash_core.py`, shared by both scripts, can only send `GET` (the method is a class constant handed to
    `urllib.request.Request`); there is no POST/PUT/PATCH/DELETE code path, no basic auth and no
    password handling. The mock platform in `tests/` returns `405` for any other verb, and the test
    suite would fail if one were sent.

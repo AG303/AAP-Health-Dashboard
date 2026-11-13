@@ -7,9 +7,13 @@ through your normal change process.
 
 ## Daily routine (support / on-call)
 
-1. Open the overview. Anything Red is triaged the same day; Amber within the week.
-2. Open the environment page, sort by the Open issues table (failures first, then severity).
-3. Attach `data/checks_latest.csv` to the incident or change record when escalating.
+1. Open the landing page. It shows the AAP and OpenShift status side by side. Anything Red is
+   triaged the same day; Amber within the week.
+2. AAP findings (gateway, controller, EDA, hub) go to the automation platform team: open
+   `aap/index.html`, then the environment detail. OpenShift findings (AAP namespace, operator,
+   storage, backups, nodes, etcd, alerts) go to the OpenShift team: open `openshift/index.html`.
+3. Attach `aap/data/checks_latest.csv` or `openshift/data/checks_latest.csv` to the incident or
+   change record when escalating.
 
 ## Common findings
 
@@ -36,8 +40,10 @@ through your normal change process.
 
 ## When the dashboard itself fails
 
+- The two scripts run independently. If only one section is stale, check that script's step (or
+  log file under cron); the other section keeps publishing.
 - Exit code 1: one environment or section could not be collected. The page shows `unknown` checks
   with the HTTP error; usually an expired token or a network/firewall change on the runner.
-- Exit code 2: nothing collected or invalid config; the workflow run goes red and the previous site
-  remains published.
+- Exit code 2: nothing collected or invalid config for that script. The workflow warns and keeps
+  that section's previous pages; it goes red only when both scripts return 2.
 - 403 on cluster checks: expected when cluster-scope RBAC is not granted; see docs/RBAC.md.

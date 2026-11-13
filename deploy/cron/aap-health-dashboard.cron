@@ -1,7 +1,13 @@
 # /etc/cron.d/aap-health-dashboard - alternative to GitHub Actions.
-# Runs at 23:00 server local time (set the host to America/Chicago), writes the static site into a
-# web root that any web server (or an OpenShift httpd pod with a PVC) serves read-only.
+# Runs both dashboards at 23:00 America/Chicago and writes one static site into a web root that any
+# web server (or an OpenShift httpd pod with a PVC) serves read-only:
+#   /var/www/html/aap-health/index.html       landing page
+#   /var/www/html/aap-health/aap/             aap_health_dashboard.py (AAP APIs only)
+#   /var/www/html/aap-health/openshift/       ocp_health_dashboard.py (OpenShift API only)
+# The scripts are independent: one failing never stops the other.
 # /opt/aap-health/.env holds the read-only tokens, mode 0600, owned by the aaphealth user:
-#   export AAP_TOKEN_PROD=...  OCP_TOKEN_PROD=...
+#   export AAP_TOKEN_PROD=...    (AAP OAuth token, scope read, Platform Auditor)
+#   export OCP_TOKEN_PROD=...    (aap-health-reader ServiceAccount token)
 CRON_TZ=America/Chicago
-0 23 * * * aaphealth cd /opt/aap-health && . ./.env && /usr/bin/python3 aap_health_dashboard.py -c environments.json -o /var/www/html/aap-health --redact -q >> /var/log/aap-health/run.log 2>&1
+0 23 * * * aaphealth cd /opt/aap-health && . ./.env && /usr/bin/python3 aap_health_dashboard.py -c environments.json -o /var/www/html/aap-health --redact -q >> /var/log/aap-health/aap.log 2>&1
+5 23 * * * aaphealth cd /opt/aap-health && . ./.env && /usr/bin/python3 ocp_health_dashboard.py -c environments.json -o /var/www/html/aap-health --redact -q >> /var/log/aap-health/openshift.log 2>&1

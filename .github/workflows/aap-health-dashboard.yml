@@ -1,5 +1,11 @@
 ---
-# Daily AAP 2.6 / OpenShift health dashboard -> GitHub Pages (gh-pages branch).
+# Daily AAP 2.6 and OpenShift health dashboards -> GitHub Pages (gh-pages branch).
+#
+# Two independent scripts run back to back and publish separate sections of one site:
+#   aap_health_dashboard.py  -> site/aap/        (AAP APIs only, AAP_TOKEN_* secrets)
+#   ocp_health_dashboard.py  -> site/openshift/  (OpenShift API only, OCP_TOKEN_* secrets)
+# Both refresh site/index.html, the landing page. Only Production is checked
+# (settings.only_tiers in environments.json).
 #
 # One-time setup (docs/SETUP.md):
 #   1. Secrets: one read-only token per environment, named exactly as aap_token_env / ocp_token_env
@@ -72,11 +78,11 @@ jobs:
           test -f environments.json || { echo "environments.json missing"; exit 2; }
           python3 -c "import json; c=json.load(open('environments.json')); print([e['name'] for e in c['environments']])"
 
-      - name: Collect health checks and render the site
-        id: run
+      - name: Collect AAP health checks (aap_health_dashboard.py)
+        id: aap
         env:
-          # Every secret is exposed to the script as JSON; it only reads the names listed in
-          # environments.json. Tokens are never written to the site.
+          # Every secret is exposed to the script as JSON; it only reads the token names listed
+          # in environments.json (aap_token_env). Tokens are never written to the site.
           AAP_HEALTH_SECRETS_JSON: ${{ toJSON(secrets) }}
           FAIL_ON: ${{ inputs.fail_on }}
           REDACT: ${{ github.event_name == 'schedule' && (vars.AAP_HEALTH_REDACT || 'true') || inputs.redact }}
@@ -85,27 +91,62 @@ jobs:
           args=(-c environments.json -o site)
           [ "${REDACT}" = "true" ] && args+=(--redact)
           [ -n "${FAIL_ON}" ] && args+=(--fail-on "${FAIL_ON}")
-          python3 aap_health_dashboard.py "${args[@]}"
-          rc=$?
+          rc=0
+          python3 aap_health_dashboard.py "${args[@]}" || rc=$?
           echo "rc=${rc}" >> "$GITHUB_OUTPUT"
+
+      - name: Collect OpenShift health checks (ocp_health_dashboard.py)
+        id: ocp
+        env:
+          AAP_HEALTH_SECRETS_JSON: ${{ toJSON(secrets) }}
+          FAIL_ON: ${{ inputs.fail_on }}
+          REDACT: ${{ github.event_name == 'schedule' && (vars.AAP_HEALTH_REDACT || 'true') || inputs.redact }}
+        run: |
+          set -uo pipefail
+          args=(-c environments.json -o site)
+          [ "${REDACT}" = "true" ] && args+=(--redact)
+          [ -n "${FAIL_ON}" ] && args+=(--fail-on "${FAIL_ON}")
+          rc=0
+          python3 ocp_health_dashboard.py "${args[@]}" || rc=$?
+          echo "rc=${rc}" >> "$GITHUB_OUTPUT"
+
+      - name: Decide whether to publish
+        env:
+          AAP_RC: ${{ steps.aap.outputs.rc }}
+          OCP_RC: ${{ steps.ocp.outputs.rc }}
+        run: |
           # 0 = all collected, 1 = partial (still publish), 2 = nothing collected, 3 = --fail-on tripped
-          if [ "${rc}" -eq 2 ]; then exit 2; fi
-          exit 0
+          echo "aap_health_dashboard.py rc=${AAP_RC}  ocp_health_dashboard.py rc=${OCP_RC}"
+          if [ "${AAP_RC}" = "2" ] && [ "${OCP_RC}" = "2" ]; then
+            echo "::error::Neither dashboard collected any data - check tokens, URLs and the runner network"
+            exit 2
+          fi
+          if [ "${AAP_RC}" = "2" ]; then
+            echo "::warning::AAP dashboard collected nothing; the previous AAP pages are kept"
+          fi
+          if [ "${OCP_RC}" = "2" ]; then
+            echo "::warning::OpenShift dashboard collected nothing; the previous OpenShift pages are kept"
+          fi
 
       - name: Job summary
         if: always()
         run: |
-          if [ -f site/data/latest.json ]; then
-            python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
-          import json
-          d = json.load(open("site/data/latest.json"))
-          print("### AAP health %s\n" % d["date"])
-          print("| Environment | Status | Score | Fail | Warn |\n|---|---|---|---|---|")
-          for e in d["environments"]:
-              m = e["metrics"]
-              print("| %s | %s | %s | %s | %s |" % (e["label"], e["status"], e["score"], m.get("checks_fail"), m.get("checks_warn")))
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, os
+          for key, label in (("aap", "Ansible Automation Platform"), ("openshift", "OpenShift")):
+              p = os.path.join("site", key, "data", "latest.json")
+              if not os.path.exists(p):
+                  print("### %s\n\nNo data published yet.\n" % label)
+                  continue
+              d = json.load(open(p))
+              print("### %s health %s\n" % (label, d["date"]))
+              print("| Environment | Status | Score | Fail | Warn |\n|---|---|---|---|---|")
+              for e in d["environments"]:
+                  m = e["metrics"]
+                  print("| %s | %s | %s | %s | %s |" % (e["label"], e["status"], e["score"], m.get("checks_fail"),
+                                                       m.get("checks_warn")))
+              print()
           PY
-          fi
 
       - name: Publish to the gh-pages branch
         run: |
@@ -119,7 +160,7 @@ jobs:
           git config user.name "aap-health-bot"
           git config user.email "aap-health-bot@users.noreply.github.com"
           git add -A
-          git commit -q -m "AAP health dashboard $(date -u +%Y-%m-%d) (run ${GITHUB_RUN_ID})"
+          git commit -q -m "AAP and OpenShift health dashboards $(date -u +%Y-%m-%d) (run ${GITHUB_RUN_ID})"
           git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
             "HEAD:refs/heads/${PAGES_BRANCH}"
         env:
@@ -134,7 +175,7 @@ jobs:
           retention-days: 14
 
       - name: Fail when platform health gate tripped
-        if: steps.run.outputs.rc == '3'
+        if: steps.aap.outputs.rc == '3' || steps.ocp.outputs.rc == '3'
         run: |
           echo "::error::An environment is at or below the --fail-on status (${{ inputs.fail_on }})"
           exit 1

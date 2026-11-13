@@ -1,4 +1,5 @@
 {
+  "_comment": "Only Production is checked: settings.only_tiers = [\"prod\"] and the other environments are \"enabled\": false. aap_health_dashboard.py uses aap_url / aap_token_env; ocp_health_dashboard.py uses ocp_api_url / ocp_token_env / prometheus_url. Set \"database\": \"external\" when AAP uses a customer-provided PostgreSQL.",
   "dashboard_title": "AAP 2.6 Platform Health",
   "report_tz": "America/Chicago",
   "redact": false,
@@ -25,6 +26,9 @@
     "etcd_fsync_fail_ms": 20
   },
   "settings": {
+    "only_tiers": [
+      "prod"
+    ],
     "minutes_saved_per_job": 15,
     "cluster_checks": true,
     "check_route_certs": true,
@@ -48,7 +52,8 @@
       "aap_cr_name": "aap",
       "operator_namespace": "aap",
       "verify_tls": true,
-      "ca_bundle": "/etc/pki/tls/certs/corp-ca-bundle.pem"
+      "ca_bundle": "/etc/pki/tls/certs/corp-ca-bundle.pem",
+      "database": "operator-managed"
     },
     {
       "name": "nonprod",
@@ -65,7 +70,8 @@
         "job_success_warn_pct": 90,
         "job_success_fail_pct": 75,
         "backup_warn_h": 50
-      }
+      },
+      "enabled": false
     },
     {
       "name": "dev",
@@ -79,7 +85,8 @@
       "aap_cr_name": "aap",
       "hub_enabled": false,
       "cluster_checks": false,
-      "check_route_certs": true
+      "check_route_certs": true,
+      "enabled": false
     }
   ]
 }

@@ -1,6 +1,9 @@
 # Health check catalog
 
-Generated from the script's check definitions. Every check is a read-only GET. Severity drives scoring
+Generated from the check definitions in `aap_health_dashboard.py` (gateway, controller, EDA, hub) and
+`ocp_health_dashboard.py` (OpenShift namespace and cluster). Each script scores and publishes only its own
+checks: AAP checks appear only under `aap/`, OpenShift checks only under `openshift/`. Every check is a
+read-only GET. Severity drives scoring
 (critical x3, major x2, minor x1) and the RAG status: Red when any critical check fails, Amber when any
 check fails or a critical/major check warns, otherwise Green. Thresholds are the defaults in
 `DEFAULT_THRESHOLDS` and can be overridden globally or per environment under `thresholds`.
@@ -9,6 +12,8 @@ Checks that cannot be evaluated (403/404, feature disabled, Prometheus not confi
 and are excluded from the score, so missing permissions never look like an outage.
 
 ## Platform gateway
+
+Script: `aap_health_dashboard.py` (AAP API token)
 
 | Check ID | Title | Severity | Reference |
 |---|---|---|---|
@@ -20,6 +25,8 @@ and are excluded from the score, so missing permissions never look like an outag
 
 ## Automation controller
 
+Script: `aap_health_dashboard.py` (AAP API token)
+
 | Check ID | Title | Severity | Reference |
 |---|---|---|---|
 | `controller.callback_queue` | Redis callback receiver queue | major | [AAP 2.6 - Ensure system health through monitoring (metrics of interest)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/observe-ensure_system_health_and_efficiency_through_monitoring) |
@@ -27,6 +34,7 @@ and are excluded from the score, so missing permissions never look like an outag
 | `controller.cleanup_jobs` | Cleanup management jobs scheduled and passing | minor | [AAP 2.6 - Operator growth topology (operator database limits)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/plan-ref_ocp_a_env_a) |
 | `controller.event_lag` | Job event processing lag | major | [AAP 2.6 - Ensure system health through monitoring (metrics of interest)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/observe-ensure_system_health_and_efficiency_through_monitoring) |
 | `controller.health_check_age` | Instance health checks recent | minor | [AAP 2.6 - Planning your cluster (ping, heartbeats, instances)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/configure-planning_your_cluster) |
+| `controller.operator_db_load` | Operator-managed database load within limits | major | [AAP 2.6 - Operator growth topology (operator database limits)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/plan-ref_ocp_a_env_a) |
 | `controller.heartbeat` | Instance heartbeats current (ping) | critical | [AAP 2.6 - Planning your cluster (ping, heartbeats, instances)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/configure-planning_your_cluster) |
 | `controller.host_usage` | Managed hosts within subscription | major | [Red Hat AAP life cycle](https://access.redhat.com/support/policy/updates/ansible-automation-platform) |
 | `controller.instances` | Instances ready with no health-check errors | critical | [AAP 2.6 - Planning your cluster (ping, heartbeats, instances)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/configure-planning_your_cluster) |
@@ -40,6 +48,8 @@ and are excluded from the score, so missing permissions never look like an outag
 
 ## Event-Driven Ansible
 
+Script: `aap_health_dashboard.py` (AAP API token)
+
 | Check ID | Title | Severity | Reference |
 |---|---|---|---|
 | `eda.activations` | Enabled rulebook activations running | major | [AAP 2.6 - EDA API root (status, activations, instances)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/administer-assembly_simplified_event_routing) |
@@ -50,6 +60,8 @@ and are excluded from the score, so missing permissions never look like an outag
 
 ## Automation hub
 
+Script: `aap_health_dashboard.py` (AAP API token)
+
 | Check ID | Title | Severity | Reference |
 |---|---|---|---|
 | `hub.status` | Hub (Pulp) status: workers, content apps, DB, Redis | critical | [AAP 2.6 - Ensure system health through monitoring (metrics of interest)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/observe-ensure_system_health_and_efficiency_through_monitoring) |
@@ -58,6 +70,8 @@ and are excluded from the score, so missing permissions never look like an outag
 | `hub.tasks_waiting` | Hub task queue draining | minor | [AAP 2.6 - Ensure system health through monitoring (metrics of interest)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/observe-ensure_system_health_and_efficiency_through_monitoring) |
 
 ## OpenShift - AAP namespace
+
+Script: `ocp_health_dashboard.py` (OpenShift ServiceAccount token)
 
 | Check ID | Title | Severity | Reference |
 |---|---|---|---|
@@ -72,7 +86,7 @@ and are excluded from the score, so missing permissions never look like an outag
 | `platform.mem_limits` | Containers below memory limit | major | [AAP 2.6 - Ensure system health through monitoring (metrics of interest)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/observe-ensure_system_health_and_efficiency_through_monitoring) |
 | `platform.oomkilled` | No OOMKilled containers (24h) | major | [AAP 2.6 - Performance considerations for operator environments](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html-single/performance_considerations_for_operator_environments/index) |
 | `platform.operator_csv` | AAP operator CSV Succeeded | critical | [AAP 2.6 - AnsibleAutomationPlatform custom resource](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/reference-ansibleautomationplatform__aap_ansible_com_v1alpha1_) |
-| `platform.operator_db_limits` | Operator-managed database within supported limits | minor | [AAP 2.6 - Operator growth topology (operator database limits)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/plan-ref_ocp_a_env_a) |
+| `platform.operator_db_limits` | Operator-managed database within supported limits (replicas, PVC size) | minor | [AAP 2.6 - Operator growth topology (operator database limits)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/plan-ref_ocp_a_env_a) |
 | `platform.operator_upgrade` | Operator update pending approval | minor | [Red Hat AAP life cycle](https://access.redhat.com/support/policy/updates/ansible-automation-platform) |
 | `platform.pdb` | PodDisruptionBudgets allow node drains | minor | [Red Hat - OpenShift 4 cluster health pre-checks](https://access.redhat.com/solutions/7004992) |
 | `platform.pod_spread` | Replicas spread across worker nodes | minor | [AAP 2.6 - Performance considerations for operator environments](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html-single/performance_considerations_for_operator_environments/index) |
@@ -88,6 +102,8 @@ and are excluded from the score, so missing permissions never look like an outag
 | `platform.workloads` | Deployments and StatefulSets at desired replicas | critical | [AAP 2.6 - AnsibleAutomationPlatform custom resource](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/reference-ansibleautomationplatform__aap_ansible_com_v1alpha1_) |
 
 ## OpenShift - cluster
+
+Script: `ocp_health_dashboard.py` (OpenShift ServiceAccount token)
 
 | Check ID | Title | Severity | Reference |
 |---|---|---|---|
