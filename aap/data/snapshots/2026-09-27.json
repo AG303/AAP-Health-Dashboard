@@ -1,0 +1,600 @@
+{
+ "dashboard": "aap",
+ "date": "2026-09-27",
+ "environments": [
+  {
+   "checks": [
+    {
+     "component": "gateway",
+     "detail": "4 services reporting good",
+     "hint": "Run python/01_aap_api_health_check.py and check the failing service pods",
+     "id": "gateway.status",
+     "severity": "critical",
+     "source": "aap_gw_status",
+     "status": "ok",
+     "title": "Gateway status endpoint (all services good)",
+     "value": "good"
+    },
+    {
+     "component": "gateway",
+     "detail": "",
+     "hint": "",
+     "id": "gateway.token_valid",
+     "severity": "critical",
+     "source": "",
+     "status": "ok",
+     "title": "API token valid",
+     "value": "aap-health-auditor"
+    },
+    {
+     "component": "controller",
+     "detail": "oldest heartbeat -3564s",
+     "hint": "Stale heartbeat = instance lost; check the controller task pod logs",
+     "id": "controller.heartbeat",
+     "severity": "critical",
+     "source": "aap_cluster",
+     "status": "ok",
+     "title": "Instance heartbeats current (ping)",
+     "value": "3 instances"
+    },
+    {
+     "component": "controller",
+     "detail": "all enabled instances ready",
+     "hint": "Run python/03_aap_instance_capacity_report.py; check instance errors in the UI",
+     "id": "controller.instances",
+     "severity": "critical",
+     "source": "aap_cluster",
+     "status": "ok",
+     "title": "Instances ready with no health-check errors",
+     "value": "3/3 ready"
+    },
+    {
+     "component": "controller",
+     "detail": "compliant=True, Red Hat Ansible Automation Platform, Premium",
+     "hint": "Renew or refresh the subscription manifest under Settings > Subscription",
+     "id": "controller.subscription",
+     "severity": "critical",
+     "source": "aap_lifecycle",
+     "status": "ok",
+     "title": "Subscription valid and compliant",
+     "value": "270.0 days left"
+    },
+    {
+     "component": "eda",
+     "detail": "2.3 ms",
+     "hint": "A slow or 500 response points at the EDA database/Redis; python/26_aap_eda_dispatcher_health_checker.py",
+     "id": "eda.status",
+     "severity": "critical",
+     "source": "aap_eda_api",
+     "status": "ok",
+     "title": "EDA status endpoint",
+     "value": "good"
+    },
+    {
+     "component": "hub",
+     "detail": "database and redis connected",
+     "hint": "Check the hub-worker / hub-content pods; python/21_aap_hub_sync_task_checker.py",
+     "id": "hub.status",
+     "severity": "critical",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Hub (Pulp) status: workers, content apps, DB, Redis",
+     "value": "2 workers, 2 content apps"
+    },
+    {
+     "component": "controller",
+     "detail": "callback_receiver_events_queue_size_redis. Red Hat: a large queue risks Redis running out of memory.",
+     "hint": "Check Redis memory limits and the callback receiver; python/26_* dispatcher checker",
+     "id": "controller.callback_queue",
+     "severity": "major",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Redis callback receiver queue",
+     "value": "257 events"
+    },
+    {
+     "component": "controller",
+     "detail": "Highest non-container instance group. Container groups are not capacity bound.",
+     "hint": "Scale task replicas or raise task_resource_requirements limits; python/03_aap_instance_capacity_report.py",
+     "id": "controller.capacity",
+     "severity": "major",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "Instance group capacity headroom",
+     "value": "47.8% used"
+    },
+    {
+     "component": "controller",
+     "detail": "callback_receiver_event_processing_avg_seconds. Red Hat: a large number means high lag; job output lags behind the job.",
+     "hint": "Add task capacity / callback receiver workers; reduce verbosity",
+     "id": "controller.event_lag",
+     "severity": "major",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Job event processing lag",
+     "value": "1.29 s"
+    },
+    {
+     "component": "controller",
+     "detail": "77.9% of licensed nodes used",
+     "hint": "Delete stale hosts (host metrics) or expand the subscription",
+     "id": "controller.host_usage",
+     "severity": "major",
+     "source": "aap_lifecycle",
+     "status": "ok",
+     "title": "Managed hosts within subscription",
+     "value": "2337 / 3000"
+    },
+    {
+     "component": "controller",
+     "detail": "Top failing: Deploy App (1)",
+     "hint": "Run python/05_aap_stuck_job_finder.py and the job failure analyzer in the toolkit",
+     "id": "controller.job_success",
+     "severity": "major",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Job success rate (24h)",
+     "value": "99.7% of 361"
+    },
+    {
+     "component": "controller",
+     "detail": "queue empty",
+     "hint": "Pending jobs mean no capacity or a blocked dependency: python/05_aap_stuck_job_finder.py",
+     "id": "controller.pending",
+     "severity": "major",
+     "source": "aap_cluster",
+     "status": "ok",
+     "title": "No stuck pending jobs",
+     "value": "0 pending"
+    },
+    {
+     "component": "controller",
+     "detail": "no enabled schedule has a next_run in the past",
+     "hint": "A next_run in the past means the dispatcher/scheduler is not running them",
+     "id": "controller.schedules",
+     "severity": "major",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Schedules firing on time",
+     "value": "0 missed of 34"
+    },
+    {
+     "component": "eda",
+     "detail": "all running",
+     "hint": "python/24_aap_eda_activation_status_checker.py; check the activation-worker pods",
+     "id": "eda.activations",
+     "severity": "major",
+     "source": "aap_eda_api",
+     "status": "ok",
+     "title": "Enabled rulebook activations running",
+     "value": "6/6 running"
+    },
+    {
+     "component": "hub",
+     "detail": "144.0 GiB free",
+     "hint": "Expand the hub file-storage PVC or run orphan cleanup",
+     "id": "hub.storage",
+     "severity": "major",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "Hub artifact storage free",
+     "value": "71.2% used"
+    },
+    {
+     "component": "gateway",
+     "detail": "warn >= 1500 ms, fail >= 5000 ms",
+     "hint": "Check gateway pod CPU/memory and the database; see Performance considerations",
+     "id": "gateway.latency",
+     "severity": "minor",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "Gateway API response time",
+     "value": "2.2 ms"
+    },
+    {
+     "component": "gateway",
+     "detail": "",
+     "hint": "",
+     "id": "gateway.least_privilege",
+     "severity": "minor",
+     "source": "",
+     "status": "ok",
+     "title": "Dashboard token is read-only (least privilege)",
+     "value": "auditor"
+    },
+    {
+     "component": "controller",
+     "detail": "job, activity stream, session and token cleanup scheduled",
+     "hint": "Re-enable the default management job schedules; unbounded job events grow the database",
+     "id": "controller.cleanup_jobs",
+     "severity": "minor",
+     "source": "aap_topology",
+     "status": "ok",
+     "title": "Cleanup management jobs scheduled and passing",
+     "value": "0 unscheduled, 0 failed (7d)"
+    },
+    {
+     "component": "controller",
+     "detail": "all checked within 24h",
+     "hint": "Health checks run automatically; a stale one points at a stuck dispatcher",
+     "id": "controller.health_check_age",
+     "severity": "minor",
+     "source": "aap_cluster",
+     "status": "ok",
+     "title": "Instance health checks recent",
+     "value": "0 stale"
+    },
+    {
+     "component": "controller",
+     "detail": "none",
+     "hint": "Check cloud credentials / source plugins",
+     "id": "controller.inventory_sources",
+     "severity": "minor",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Inventory source syncs healthy",
+     "value": "0 failed"
+    },
+    {
+     "component": "controller",
+     "detail": "none",
+     "hint": "Set job template timeouts; python/05_aap_stuck_job_finder.py",
+     "id": "controller.long_running",
+     "severity": "minor",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "No runaway jobs (> 4h)",
+     "value": "0"
+    },
+    {
+     "component": "controller",
+     "detail": "environments.json: database = external",
+     "hint": "",
+     "id": "controller.operator_db_load",
+     "severity": "minor",
+     "source": "aap_topology",
+     "status": "ok",
+     "title": "Operator-managed database load within limits",
+     "value": "external database"
+    },
+    {
+     "component": "controller",
+     "detail": "none",
+     "hint": "Check SCM credentials and reachability from the task pods",
+     "id": "controller.projects",
+     "severity": "minor",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Project syncs healthy",
+     "value": "0 failed"
+    },
+    {
+     "component": "eda",
+     "detail": "",
+     "hint": "Inspect activation-instance logs",
+     "id": "eda.failed_instances",
+     "severity": "minor",
+     "source": "aap_eda_api",
+     "status": "ok",
+     "title": "No failed rulebook processes (24h)",
+     "value": "0"
+    },
+    {
+     "component": "eda",
+     "detail": "none",
+     "hint": "Re-sync the project; check the SCM credential",
+     "id": "eda.projects",
+     "severity": "minor",
+     "source": "aap_eda_api",
+     "status": "ok",
+     "title": "EDA project imports healthy",
+     "value": "0 failed"
+    },
+    {
+     "component": "eda",
+     "detail": "none",
+     "hint": "Review the rulebook process logs for the activation",
+     "id": "eda.restarts",
+     "severity": "minor",
+     "source": "aap_eda_api",
+     "status": "ok",
+     "title": "Activations not restart-looping",
+     "value": "0"
+    },
+    {
+     "component": "hub",
+     "detail": "sync, import and signing tasks",
+     "hint": "python/21_aap_hub_sync_task_checker.py",
+     "id": "hub.tasks_failed",
+     "severity": "minor",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "No failed hub tasks (24h)",
+     "value": "0"
+    },
+    {
+     "component": "hub",
+     "detail": "",
+     "hint": "Waiting tasks with workers online usually mean a stuck worker - restart hub-worker",
+     "id": "hub.tasks_waiting",
+     "severity": "minor",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Hub task queue draining",
+     "value": "0 waiting"
+    }
+   ],
+   "collected_at": "2026-09-28T03:00:00Z",
+   "components": {
+    "controller": {
+     "fail": 0,
+     "ok": 16,
+     "status": "ok",
+     "unknown": 0,
+     "warn": 0
+    },
+    "eda": {
+     "fail": 0,
+     "ok": 5,
+     "status": "ok",
+     "unknown": 0,
+     "warn": 0
+    },
+    "gateway": {
+     "fail": 0,
+     "ok": 4,
+     "status": "ok",
+     "unknown": 0,
+     "warn": 0
+    },
+    "hub": {
+     "fail": 0,
+     "ok": 4,
+     "status": "ok",
+     "unknown": 0,
+     "warn": 0
+    }
+   },
+   "details": {
+    "eda_activations": [
+     {
+      "enabled": true,
+      "message": "",
+      "name": "dynatrace-problems",
+      "restarts": 0,
+      "status": "running"
+     },
+     {
+      "enabled": true,
+      "message": "",
+      "name": "servicenow-incidents",
+      "restarts": 0,
+      "status": "running"
+     },
+     {
+      "enabled": true,
+      "message": "",
+      "name": "alertmanager-webhook",
+      "restarts": 0,
+      "status": "running"
+     },
+     {
+      "enabled": true,
+      "message": "",
+      "name": "kafka-events",
+      "restarts": 0,
+      "status": "running"
+     },
+     {
+      "enabled": true,
+      "message": "",
+      "name": "splunk-alerts",
+      "restarts": 0,
+      "status": "running"
+     },
+     {
+      "enabled": true,
+      "message": "",
+      "name": "vm-drift",
+      "restarts": 0,
+      "status": "running"
+     },
+     {
+      "enabled": false,
+      "message": "",
+      "name": "retired-rulebook",
+      "restarts": 0,
+      "status": "stopped"
+     }
+    ],
+    "instance_groups": [
+     {
+      "capacity": 360,
+      "container_group": false,
+      "instances": 3,
+      "name": "controlplane",
+      "running": 16,
+      "used": 172,
+      "used_pct": 47.8
+     },
+     {
+      "capacity": 0,
+      "container_group": true,
+      "instances": 0,
+      "name": "default",
+      "running": 14,
+      "used": 0,
+      "used_pct": null
+     }
+    ],
+    "instances": [
+     {
+      "capacity": 120,
+      "enabled": true,
+      "hostname": "prod-controller-task-0",
+      "jobs_running": 4,
+      "last_health_check": "2026-09-28T01:54:00.000000Z",
+      "remaining_pct": 56.7,
+      "state": "ready",
+      "type": "control",
+      "used": 52,
+      "version": "4.7.4"
+     },
+     {
+      "capacity": 120,
+      "enabled": true,
+      "hostname": "prod-controller-task-1",
+      "jobs_running": 6,
+      "last_health_check": "2026-09-27T18:11:00.000000Z",
+      "remaining_pct": 51.7,
+      "state": "ready",
+      "type": "control",
+      "used": 58,
+      "version": "4.7.4"
+     },
+     {
+      "capacity": 120,
+      "enabled": true,
+      "hostname": "prod-controller-task-2",
+      "jobs_running": 6,
+      "last_health_check": "2026-09-27T21:32:00.000000Z",
+      "remaining_pct": 48.3,
+      "state": "ready",
+      "type": "control",
+      "used": 62,
+      "version": "4.7.4"
+     }
+    ],
+    "launch_types": {
+     "manual": 58,
+     "relaunch": 69,
+     "scheduled": 123,
+     "webhook": 60,
+     "workflow": 53
+    },
+    "pod_restarts": {},
+    "top_failing_templates": [
+     [
+      "Deploy App",
+      1
+     ]
+    ]
+   },
+   "errors": [],
+   "headline": [
+    [
+     "Job success, 24h",
+     "99.7%"
+    ],
+    [
+     "Jobs, 24h",
+     "363"
+    ],
+    [
+     "Est. hours saved, 30d",
+     "3,034.8"
+    ],
+    [
+     "Peak capacity used",
+     "47.8%"
+    ],
+    [
+     "Subscription days left",
+     "270"
+    ],
+    [
+     "Controller",
+     "4.7.4"
+    ]
+   ],
+   "info": {
+    "api_user": "aap-health-auditor",
+    "controller_ha": true,
+    "controller_version": "4.7.4",
+    "metrics_series": 9,
+    "redis_mode": "cluster",
+    "subscription": "Red Hat Ansible Automation Platform, Premium"
+   },
+   "label": "Production",
+   "metrics": {
+    "checks_fail": 0,
+    "checks_ok": 29,
+    "checks_unknown": 0,
+    "checks_warn": 0,
+    "ctl.callback_queue": 257.0,
+    "ctl.capacity_used_pct": 47.8,
+    "ctl.credentials": 60,
+    "ctl.db_connections": 53.0,
+    "ctl.event_lag_s": 1.286,
+    "ctl.execution_environments": 8,
+    "ctl.host_usage_pct": 77.9,
+    "ctl.hosts": 2400,
+    "ctl.hosts_licensed": 3000,
+    "ctl.hosts_used": 2337,
+    "ctl.instances": 3,
+    "ctl.instances_unhealthy": 0,
+    "ctl.inventories": 30,
+    "ctl.inventory_sources_failed": 0,
+    "ctl.job_avg_s": 109.7,
+    "ctl.job_p95_s": 308.0,
+    "ctl.job_templates": 180,
+    "ctl.jobs_24h": 363,
+    "ctl.jobs_30d": 12324,
+    "ctl.jobs_canceled_24h": 2,
+    "ctl.jobs_failed_24h": 1,
+    "ctl.jobs_running": 16,
+    "ctl.jobs_success_24h": 360,
+    "ctl.jobs_success_30d": 12139,
+    "ctl.latency_ms": 2.2,
+    "ctl.license_days_left": 270.0,
+    "ctl.long_running": 0,
+    "ctl.pending": 0,
+    "ctl.pending_metric": 0.0,
+    "ctl.projects": 12,
+    "ctl.projects_failed": 0,
+    "ctl.remaining_capacity": 178.0,
+    "ctl.schedules_enabled": 34,
+    "ctl.schedules_missed": 0,
+    "ctl.sessions": 56.0,
+    "ctl.success_rate_24h": 99.7,
+    "ctl.success_rate_30d": 98.5,
+    "ctl.workflow_jobs_24h": 45,
+    "ctl.workflow_templates": 24,
+    "eda.activations": 7,
+    "eda.activations_enabled": 6,
+    "eda.activations_running": 6,
+    "eda.activations_unhealthy": 0,
+    "eda.decision_environments": 3,
+    "eda.event_streams": 3,
+    "eda.failed_instances_24h": 0,
+    "eda.latency_ms": 2.3,
+    "eda.projects_failed": 0,
+    "eda.rules_fired_24h": 155,
+    "est_hours_saved_24h": 90.0,
+    "est_hours_saved_30d": 3034.8,
+    "gw.latency_ms": 2.2,
+    "gw.orgs": 6,
+    "gw.services_down": 0,
+    "gw.users_active_30d": 54,
+    "gw.users_total": 240,
+    "health_score": 100.0,
+    "hub.collections": 310,
+    "hub.content_apps": 2,
+    "hub.ee_repositories": 9,
+    "hub.latency_ms": 2.1,
+    "hub.storage_free_gb": 144.0,
+    "hub.storage_used_pct": 71.2,
+    "hub.tasks_failed_24h": 0,
+    "hub.tasks_waiting": 0,
+    "hub.workers": 2,
+    "open_critical": 0
+   },
+   "name": "prod",
+   "score": 100.0,
+   "status": "green",
+   "tier": "prod"
+  }
+ ],
+ "generated": "2026-09-28T03:00:00Z",
+ "version": "2.0.0"
+}

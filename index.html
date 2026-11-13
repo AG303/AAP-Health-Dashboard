@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AAP 2.6 Platform Health (mock)</title><style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2230;--muted:#5d6678;--line:#e1e5ec;
+--good:#17794a;--warn:#a96a00;--bad:#b83227;--neutral:#5d6678;--goodbg:#e4f4ea;--warnbg:#fdf0d5;--badbg:#fbe6e3;--neutralbg:#eceff3;
+--s0:#1b66c9;--s1:#c4600c;--s2:#7a43b6;--s3:#0f8a8a;--s4:#b8327a;--s5:#5b6b00;--link:#1b66c9}
+@media (prefers-color-scheme:dark){:root{--bg:#10141c;--card:#181e29;--ink:#e8ecf3;--muted:#9aa4b6;--line:#2a3243;
+--good:#5fd29a;--warn:#f0b950;--bad:#ff8b7d;--neutral:#9aa4b6;--goodbg:#173626;--warnbg:#3b2f12;--badbg:#401e1a;--neutralbg:#232b3a;
+--s0:#6aa6f5;--s1:#f0944a;--s2:#b48cf0;--s3:#4fd1d1;--s4:#f07ab8;--s5:#c3d64a;--link:#8ab8ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--link)}.wrap{max-width:1280px;margin:0 auto;padding:20px 20px 48px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px}
+h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 4px}h3{font-size:14px;margin:12px 0 2px}.sub{color:var(--muted);font-size:12.5px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px;font-size:12.5px}
+.chip b{font-weight:600}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--neutral)}
+.dot.green{background:var(--good)}.dot.amber{background:var(--warn)}.dot.red{background:var(--bad)}
+.banner{border-radius:8px;padding:10px 14px;margin-bottom:14px;border:1px solid var(--line)}
+.banner.bad{background:var(--badbg);border-color:var(--bad)}.banner.warn{background:var(--warnbg);border-color:var(--warn)}
+.banner ul{margin:4px 0 0 18px;padding:0}
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.hero .card .v{font-size:27px;font-weight:650;line-height:1.1}.hero .card .l{color:var(--muted);font-size:12.5px;margin-top:4px}
+.hero .card .t{color:var(--muted);font-size:11.5px;margin-top:2px}
+.v.good{color:var(--good)}.v.warn{color:var(--warn)}.v.bad{color:var(--bad)}
+section.card{margin-bottom:16px}.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px}
+.tile{border:1px solid var(--line);border-radius:8px;padding:10px 12px;border-left:5px solid var(--neutral)}
+.tile.ok{border-left-color:var(--good)}.tile.warn{border-left-color:var(--warn)}.tile.fail{border-left-color:var(--bad)}
+.tile b{display:block;margin-bottom:2px}
+table{width:100%;border-collapse:collapse;margin-top:8px}th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}td:first-child{white-space:nowrap}td.small{font-size:12.5px;color:var(--muted);max-width:420px}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.ok,.pill.green{background:var(--goodbg);color:var(--good)}.pill.warn,.pill.amber{background:var(--warnbg);color:var(--warn)}
+.pill.fail,.pill.red{background:var(--badbg);color:var(--bad)}.pill.unknown{background:var(--neutralbg);color:var(--neutral)}
+.sev{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+details{border:1px solid var(--line);border-radius:8px;margin-top:10px;padding:2px 12px;background:var(--card)}
+summary{cursor:pointer;padding:8px 0;font-weight:600}.muted{color:var(--muted)}
+svg text{fill:var(--muted);font-size:11px}svg .grid{stroke:var(--line)}svg .tgt{stroke:var(--muted);stroke-dasharray:4 4;fill:none}
+svg .l0{stroke:var(--s0);fill:none;stroke-width:2}svg .p0{fill:var(--s0)}.sw0{background:var(--s0)}
+svg .l1{stroke:var(--s1);fill:none;stroke-width:2}svg .p1{fill:var(--s1)}.sw1{background:var(--s1)}
+svg .l2{stroke:var(--s2);fill:none;stroke-width:2}svg .p2{fill:var(--s2)}.sw2{background:var(--s2)}
+svg .l3{stroke:var(--s3);fill:none;stroke-width:2}svg .p3{fill:var(--s3)}.sw3{background:var(--s3)}
+svg .l4{stroke:var(--s4);fill:none;stroke-width:2}svg .p4{fill:var(--s4)}.sw4{background:var(--s4)}
+svg .l5{stroke:var(--s5);fill:none;stroke-width:2}svg .p5{fill:var(--s5)}.sw5{background:var(--s5)}
+
+.key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;margin-top:4px}.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+footer{color:var(--muted);font-size:12px;margin-top:20px}footer p{margin:4px 0}
+.scroll{overflow-x:auto}.scroll.tall{max-height:380px;overflow:auto;border-top:1px solid var(--line)}
+.scroll.tall th{position:sticky;top:0;background:var(--card);box-shadow:0 1px 0 var(--line)}
+.spark polyline{stroke:var(--s0);fill:none;stroke-width:1.6}
+.nav{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.nav a{padding:8px 14px;text-decoration:none;color:var(--muted);border:1px solid transparent;border-bottom:0;
+border-radius:8px 8px 0 0;margin-bottom:-1px;font-size:13px}
+.nav a.on{background:var(--card);border-color:var(--line);color:var(--ink);font-weight:600}
+.dom .domhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dom .domscore{display:flex;align-items:center;gap:10px;margin:8px 0 2px}.dom .domscore .v{font-size:34px;font-weight:650}
+.dom .v.good{color:var(--good)}.dom .v.warn{color:var(--warn)}.dom .v.bad{color:var(--bad)}
+table.facts td{padding:5px 0}table.facts td.n{padding-left:12px}
+
+.nav{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.nav a{padding:8px 14px;text-decoration:none;color:var(--muted);border:1px solid transparent;border-bottom:0;
+border-radius:8px 8px 0 0;margin-bottom:-1px;font-size:13px}
+.nav a.on{background:var(--card);border-color:var(--line);color:var(--ink);font-weight:600}
+.dom .domhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dom .domscore{display:flex;align-items:center;gap:10px;margin:8px 0 2px}.dom .domscore .v{font-size:34px;font-weight:650}
+.dom .v.good{color:var(--good)}.dom .v.warn{color:var(--warn)}.dom .v.bad{color:var(--bad)}
+table.facts td{padding:5px 0}table.facts td.n{padding-left:12px}
+</style></head><body><div class="wrap"><nav class="nav"><a class="on" href="index.html">Overview</a><a class="" href="aap/index.html">Ansible Automation Platform</a><a class="" href="openshift/index.html">OpenShift</a></nav><header><div><h1>AAP 2.6 Platform Health (mock)</h1><div class="sub">Daily health of Ansible Automation Platform 2.6 and the OpenShift platform it runs on &middot; updated 2026-11-13 22:00 CST</div></div><div class="chips"></div></header><div class="grid2"><section class="card dom"><div class="domhead"><h2>Ansible Automation Platform</h2><span class="pill green">Green</span></div><div class="domscore"><span class="v good">100</span><span class="muted"> health score &middot; target 90</span><svg class="spark" viewBox="0 0 110 26" width="110" height="26"><polyline points="2.0,2.2 5.7,2.0 9.3,2.4 13.0,2.2 16.6,2.0 20.3,2.2 23.9,2.0 27.6,2.0 31.2,2.0 34.9,2.0 38.6,2.0 42.2,2.2 45.9,2.0 49.5,2.0 53.2,2.0 56.8,2.0 60.5,2.0 64.1,2.0 67.8,2.4 71.4,2.0 75.1,2.2 78.8,2.0 82.4,2.0 86.1,2.4 89.7,2.2 93.4,2.0 97.0,2.0 100.7,2.0 104.3,2.0 108.0,2.0"/></svg></div><div class="sub">Production &middot; 29 ok, 0 warn, 0 fail &middot; green 27 of last 30 days &middot; 0 open critical &middot; collected 2026-11-13</div><table class="facts"><tr><td>Job success, 24h</td><td class="n">98.7%</td></tr><tr><td>Jobs, 24h</td><td class="n">466</td></tr><tr><td>Est. hours saved, 30d</td><td class="n">3,062</td></tr><tr><td>Peak capacity used</td><td class="n">45.6%</td></tr><tr><td>Subscription days left</td><td class="n">223</td></tr><tr><td>Controller</td><td class="n">4.7.4</td></tr></table><p><a href="aap/index.html"><b>Open the Ansible Automation Platform dashboard</b></a> &middot; <a href="aap/env/prod.html">engineering detail</a></p></section><section class="card dom"><div class="domhead"><h2>OpenShift</h2><span class="pill amber">Amber</span></div><div class="domscore"><span class="v good">98.7</span><span class="muted"> health score &middot; target 90</span><svg class="spark" viewBox="0 0 110 26" width="110" height="26"><polyline points="2.0,2.0 5.7,2.0 9.3,2.0 13.0,2.0 16.6,2.0 20.3,2.0 23.9,2.0 27.6,2.0 31.2,2.0 34.9,2.0 38.6,2.0 42.2,2.0 45.9,2.0 49.5,2.0 53.2,2.0 56.8,2.0 60.5,2.0 64.1,2.0 67.8,2.0 71.4,2.0 75.1,2.0 78.8,2.0 82.4,2.0 86.1,2.3 89.7,2.0 93.4,2.4 97.0,2.0 100.7,2.0 104.3,2.0 108.0,2.3"/></svg></div><div class="sub">Production &middot; 37 ok, 1 warn, 0 fail &middot; green 27 of last 30 days &middot; 0 open critical &middot; collected 2026-11-13</div><table class="facts"><tr><td>Critical alerts</td><td class="n">0</td></tr><tr><td>AAP pods not ready</td><td class="n">0</td></tr><tr><td>Pod restarts</td><td class="n">0</td></tr><tr><td>Last backup</td><td class="n">2 h</td></tr><tr><td>Min cert days</td><td class="n">364.7</td></tr><tr><td>OpenShift</td><td class="n">4.18.25</td></tr></table><p><a href="openshift/index.html"><b>Open the OpenShift dashboard</b></a> &middot; <a href="openshift/env/prod.html">engineering detail</a></p></section></div><section class="card"><h2>How the dashboards are built</h2><div class="sub">Two independent scripts run every evening with read-only tokens. <b>aap_health_dashboard.py</b> uses only the AAP APIs (platform gateway, automation controller, Event-Driven Ansible, automation hub). <b>ocp_health_dashboard.py</b> uses only the OpenShift API and cluster monitoring (AAP namespace, operator, storage, backups, routes, nodes, etcd, alerts). Each has its own score, history and pages.</div></section><footer><p>aap_health_dashboard.py / ocp_health_dashboard.py v2.0.0. Read-only: every call is an HTTP GET with a read-only token. Hostnames and URLs are redacted.</p><p>Hours saved is an estimate: successful jobs x 15 minutes. Health checks follow Red Hat guidance: <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/configure-planning_your_cluster" rel="noopener">AAP 2.6 - Planning your cluster (ping, heartbeats, instances)</a> &middot; <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/observe-ensure_system_health_and_efficiency_through_monitoring" rel="noopener">AAP 2.6 - Ensure system health through monitoring (metrics of interest)</a> &middot; <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/observe-assembly_controller_metrics" rel="noopener">AAP 2.6 - Send metrics to system monitoring software</a> &middot; <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/configure-con_gw_open_api_specification" rel="noopener">AAP 2.6 - Platform gateway OpenAPI (/api/gateway/v1/status/)</a> &middot; <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/administer-assembly_simplified_event_routing" rel="noopener">AAP 2.6 - EDA API root (status, activations, instances)</a> &middot; <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/plan-ref_ocp_a_env_a" rel="noopener">AAP 2.6 - Operator growth topology (operator database limits)</a> &middot; <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html-single/performance_considerations_for_operator_environments/index" rel="noopener">AAP 2.6 - Performance considerations for operator environments</a> &middot; <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/administer-assembly_aap_backup" rel="noopener">AAP 2.6 - Back up the platform on OpenShift</a> &middot; <a href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/reference-ansibleautomationplatform__aap_ansible_com_v1alpha1_" rel="noopener">AAP 2.6 - AnsibleAutomationPlatform custom resource</a> &middot; <a href="https://access.redhat.com/support/policy/updates/ansible-automation-platform" rel="noopener">Red Hat AAP life cycle</a> &middot; <a href="https://access.redhat.com/solutions/7004992" rel="noopener">Red Hat - OpenShift 4 cluster health pre-checks</a> &middot; <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/pdf/validation_and_troubleshooting/index" rel="noopener">OpenShift 4.20 - Validation and troubleshooting</a> &middot; <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/nodes/working-with-nodes" rel="noopener">OpenShift 4.22 - Working with nodes (node conditions)</a> &middot; <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/scalability_and_performance/recommended-performance-and-scalability-practices-2" rel="noopener">OpenShift 4.18 - Recommended performance practices (etcd)</a> &middot; <a href="https://github.com/openshift/cluster-etcd-operator/blob/master/docs/performance-metrics.md" rel="noopener">OpenShift cluster-etcd-operator - etcd performance metrics</a></p></footer></div></body></html>

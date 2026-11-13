@@ -1,0 +1,1038 @@
+{
+ "dashboard": "openshift",
+ "date": "2026-11-12",
+ "environments": [
+  {
+   "checks": [
+    {
+     "component": "platform",
+     "detail": "Successful",
+     "hint": "oc describe ansibleautomationplatform aap -n aap; check the operator logs",
+     "id": "platform.aap_cr",
+     "severity": "critical",
+     "source": "aap_cr",
+     "status": "ok",
+     "title": "AnsibleAutomationPlatform CR reconciled",
+     "value": "aap"
+    },
+    {
+     "component": "platform",
+     "detail": "aap-backup-20261113",
+     "hint": "Backups older than a day mean the backup schedule is not running",
+     "id": "platform.backup",
+     "severity": "critical",
+     "source": "aap_backup",
+     "status": "ok",
+     "title": "Recent successful platform backup",
+     "value": "2.0h ago"
+    },
+    {
+     "component": "platform",
+     "detail": "none",
+     "hint": "oc logs --previous <pod>; check image pull secrets",
+     "id": "platform.crashloop",
+     "severity": "critical",
+     "source": "aap_cr",
+     "status": "ok",
+     "title": "No CrashLoopBackOff / image pull errors",
+     "value": "0"
+    },
+    {
+     "component": "platform",
+     "detail": "aap-operator.v2.6.0-0.1761234567",
+     "hint": "oc get csv -n aap; check the install plan",
+     "id": "platform.operator_csv",
+     "severity": "critical",
+     "source": "aap_cr",
+     "status": "ok",
+     "title": "AAP operator CSV Succeeded",
+     "value": "Succeeded"
+    },
+    {
+     "component": "platform",
+     "detail": "all ready",
+     "hint": "oc describe pod <name> -n aap",
+     "id": "platform.pods_ready",
+     "severity": "critical",
+     "source": "aap_cr",
+     "status": "ok",
+     "title": "AAP pods Running and Ready",
+     "value": "19/19 ready"
+    },
+    {
+     "component": "platform",
+     "detail": "all bound",
+     "hint": "oc describe pvc -n aap; check the storage class / provisioner",
+     "id": "platform.pvc_bound",
+     "severity": "critical",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "PersistentVolumeClaims Bound",
+     "value": "3/3 bound"
+    },
+    {
+     "component": "platform",
+     "detail": "aap 365.7d, aap-controller 365.7d, aap-hub 365.7d, aap-eda 365.7d",
+     "hint": "python/28_aap_ssl_certificate_scanner.py; rotate the route / ingress certificate",
+     "id": "platform.route_tls",
+     "severity": "critical",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "Route TLS certificates not expiring",
+     "value": "365.7 days"
+    },
+    {
+     "component": "platform",
+     "detail": "all at desired",
+     "hint": "oc get deploy,sts -n aap",
+     "id": "platform.workloads",
+     "severity": "critical",
+     "source": "aap_cr",
+     "status": "ok",
+     "title": "Deployments and StatefulSets at desired replicas",
+     "value": "0 degraded"
+    },
+    {
+     "component": "cluster",
+     "detail": "all members ready",
+     "hint": "oc rsh -n openshift-etcd <pod> etcdctl endpoint health",
+     "id": "cluster.etcd_members",
+     "severity": "critical",
+     "source": "ocp_etcd",
+     "status": "ok",
+     "title": "etcd members running",
+     "value": "3/3 ready"
+    },
+    {
+     "component": "cluster",
+     "detail": "",
+     "hint": "oc get pods -n openshift-etcd; check member health",
+     "id": "cluster.etcd_operator",
+     "severity": "critical",
+     "source": "ocp_etcd",
+     "status": "ok",
+     "title": "etcd operator healthy",
+     "value": "Degraded=False"
+    },
+    {
+     "component": "cluster",
+     "detail": "all Ready",
+     "hint": "oc describe node <name>; oc adm top nodes",
+     "id": "cluster.nodes_ready",
+     "severity": "critical",
+     "source": "ocp_nodes",
+     "status": "ok",
+     "title": "Nodes Ready",
+     "value": "6/6 ready"
+    },
+    {
+     "component": "cluster",
+     "detail": "all healthy",
+     "hint": "oc get co; oc describe co <name>",
+     "id": "cluster.operators",
+     "severity": "critical",
+     "source": "ocp_upgrade_checks",
+     "status": "ok",
+     "title": "ClusterOperators Available and not Degraded",
+     "value": "12/12 healthy"
+    },
+    {
+     "component": "cluster",
+     "detail": "Progressing=False, 1 updates available, channel stable-4.18",
+     "hint": "oc adm upgrade; oc describe clusterversion",
+     "id": "cluster.version",
+     "severity": "critical",
+     "source": "ocp_validate",
+     "status": "ok",
+     "title": "ClusterVersion Available, not Failing",
+     "value": "4.18.25"
+    },
+    {
+     "component": "platform",
+     "detail": "none",
+     "hint": "Observe > Alerting filtered to namespace aap",
+     "id": "platform.alerts",
+     "severity": "major",
+     "source": "ocp_upgrade_checks",
+     "status": "ok",
+     "title": "No alerts firing in the AAP namespace",
+     "value": "0"
+    },
+    {
+     "component": "platform",
+     "detail": "all Successful",
+     "hint": "Check the component operator pod logs in aap",
+     "id": "platform.component_crs",
+     "severity": "major",
+     "source": "aap_cr",
+     "status": "ok",
+     "title": "Component CRs reconciled (controller, EDA, hub)",
+     "value": "3/3 ok"
+    },
+    {
+     "component": "platform",
+     "detail": "all under 85%",
+     "hint": "Red Hat: capacity does not introspect host resources - watch CPU/memory and raise limits",
+     "id": "platform.mem_limits",
+     "severity": "major",
+     "source": "aap_monitor",
+     "status": "ok",
+     "title": "Containers below memory limit",
+     "value": "0 near limit"
+    },
+    {
+     "component": "platform",
+     "detail": "none",
+     "hint": "Raise the memory limit in the CR (*_resource_requirements)",
+     "id": "platform.oomkilled",
+     "severity": "major",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "No OOMKilled containers (24h)",
+     "value": "0"
+    },
+    {
+     "component": "platform",
+     "detail": "",
+     "hint": "Expand the PVC (storage class must allow expansion); run cleanup management jobs",
+     "id": "platform.pvc_usage",
+     "severity": "major",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "PVC free space (database, hub, redis)",
+     "value": "73.6% max used"
+    },
+    {
+     "component": "platform",
+     "detail": "headroom available",
+     "hint": "Job pods fail to schedule when the quota is exhausted",
+     "id": "platform.quota",
+     "severity": "major",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "ResourceQuota headroom",
+     "value": "46.7% max"
+    },
+    {
+     "component": "platform",
+     "detail": "no new restarts",
+     "hint": "Restarts are counted against the previous daily snapshot",
+     "id": "platform.restarts",
+     "severity": "major",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "Pod restarts since last run",
+     "value": "0"
+    },
+    {
+     "component": "platform",
+     "detail": "all admitted",
+     "hint": "oc describe route -n aap",
+     "id": "platform.routes",
+     "severity": "major",
+     "source": "aap_cr",
+     "status": "ok",
+     "title": "Routes admitted by the ingress controller",
+     "value": "4/4"
+    },
+    {
+     "component": "cluster",
+     "detail": "none",
+     "hint": "Observe > Alerting in the console; follow the alert runbook",
+     "id": "cluster.alerts",
+     "severity": "major",
+     "source": "ocp_upgrade_checks",
+     "status": "ok",
+     "title": "No critical alerts firing",
+     "value": "0 critical, 0 warning"
+    },
+    {
+     "component": "cluster",
+     "detail": "Red Hat: p99 of etcd_disk_wal_fsync_duration_seconds should be below 10 ms",
+     "hint": "Move etcd to faster (NVMe/SSD) dedicated disks",
+     "id": "cluster.etcd_fsync",
+     "severity": "major",
+     "source": "ocp_etcd",
+     "status": "ok",
+     "title": "etcd WAL fsync p99 < 10 ms",
+     "value": "3.8 ms"
+    },
+    {
+     "component": "cluster",
+     "detail": "etcd_server_leader_changes_seen_total; frequent elections point at disk or network latency",
+     "hint": "Investigate etcd disk and network latency",
+     "id": "cluster.etcd_leader",
+     "severity": "major",
+     "source": "ocp_etcd",
+     "status": "ok",
+     "title": "etcd leader stable (24h)",
+     "value": "0 changes"
+    },
+    {
+     "component": "cluster",
+     "detail": "all updated",
+     "hint": "oc get mcp; oc describe mcp <pool>",
+     "id": "cluster.mcp",
+     "severity": "major",
+     "source": "ocp_upgrade_checks",
+     "status": "ok",
+     "title": "MachineConfigPools updated, not Degraded",
+     "value": "2 pools"
+    },
+    {
+     "component": "cluster",
+     "detail": "headroom available",
+     "hint": "Nodes need spare capacity for pod rescheduling during upgrades",
+     "id": "cluster.node_headroom",
+     "severity": "major",
+     "source": "ocp_validate",
+     "status": "ok",
+     "title": "Node CPU and memory headroom",
+     "value": "cpu 58.3% / mem 57.9% max"
+    },
+    {
+     "component": "cluster",
+     "detail": "none",
+     "hint": "Pressure triggers pod eviction - free disk / memory on the node",
+     "id": "cluster.node_pressure",
+     "severity": "major",
+     "source": "ocp_nodes",
+     "status": "ok",
+     "title": "No Memory/Disk/PID pressure on nodes",
+     "value": "0"
+    },
+    {
+     "component": "platform",
+     "detail": "none above 25%",
+     "hint": "Raise CPU requests/limits (Red Hat observed PostgreSQL throttling below 500m requests)",
+     "id": "platform.cpu_throttling",
+     "severity": "minor",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "AAP pods not CPU throttled (1h)",
+     "value": "5% max"
+    },
+    {
+     "component": "platform",
+     "detail": "Unhealthy x4, BackOff x1",
+     "hint": "oc get events -n aap --field-selector type=Warning",
+     "id": "platform.events",
+     "severity": "minor",
+     "source": "aap_cr",
+     "status": "ok",
+     "title": "Warning events in namespace (24h)",
+     "value": "5"
+    },
+    {
+     "component": "platform",
+     "detail": "Customer-provided PostgreSQL",
+     "hint": "",
+     "id": "platform.operator_db_limits",
+     "severity": "minor",
+     "source": "aap_topology",
+     "status": "ok",
+     "title": "Operator-managed database within supported limits",
+     "value": "external database"
+    },
+    {
+     "component": "platform",
+     "detail": "installed aap-operator.v2.6.0-0.1761234567, channel stable-2.6, approval Manual",
+     "hint": "Review and approve the InstallPlan in a change window",
+     "id": "platform.operator_upgrade",
+     "severity": "minor",
+     "source": "aap_lifecycle",
+     "status": "ok",
+     "title": "Operator update pending approval",
+     "value": "up to date"
+    },
+    {
+     "component": "platform",
+     "detail": "none",
+     "hint": "A PDB with 0 allowed disruptions stalls MachineConfigPool rollouts during upgrades",
+     "id": "platform.pdb",
+     "severity": "minor",
+     "source": "ocp_upgrade_checks",
+     "status": "ok",
+     "title": "PodDisruptionBudgets allow node drains",
+     "value": "0 blocking"
+    },
+    {
+     "component": "platform",
+     "detail": "multi-replica workloads span more than one node",
+     "hint": "Red Hat recommends topology_spread_constraints so one node loss does not take out a component",
+     "id": "platform.pod_spread",
+     "severity": "minor",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "Replicas spread across worker nodes",
+     "value": "0"
+    },
+    {
+     "component": "platform",
+     "detail": "limits set",
+     "hint": "Control capacity is derived from the task container limits; set task_resource_requirements",
+     "id": "platform.task_limits",
+     "severity": "minor",
+     "source": "aap_perf_ocp",
+     "status": "ok",
+     "title": "Controller task containers have resource limits",
+     "value": "0 without limits"
+    },
+    {
+     "component": "cluster",
+     "detail": "none",
+     "hint": "oc get csr; approve legitimate node CSRs (oc adm certificate approve)",
+     "id": "cluster.csr",
+     "severity": "minor",
+     "source": "ocp_upgrade_checks",
+     "status": "ok",
+     "title": "No pending certificate signing requests",
+     "value": "0 pending"
+    },
+    {
+     "component": "cluster",
+     "detail": "etcd_disk_backend_commit_duration_seconds p99",
+     "hint": "Check disk bandwidth on control plane nodes",
+     "id": "cluster.etcd_commit",
+     "severity": "minor",
+     "source": "ocp_etcd_metrics",
+     "status": "ok",
+     "title": "etcd backend commit p99",
+     "value": "8.95 ms"
+    },
+    {
+     "component": "cluster",
+     "detail": "Red Hat: etcd_network_peer_round_trip_time_seconds p99 should be below 50 ms",
+     "hint": "Check control plane network latency",
+     "id": "cluster.etcd_rtt",
+     "severity": "minor",
+     "source": "ocp_etcd",
+     "status": "ok",
+     "title": "etcd peer round trip p99 < 50 ms",
+     "value": "6.63 ms"
+    },
+    {
+     "component": "cluster",
+     "detail": "none",
+     "hint": "oc adm uncordon <node> after maintenance",
+     "id": "cluster.nodes_schedulable",
+     "severity": "minor",
+     "source": "ocp_upgrade_checks",
+     "status": "ok",
+     "title": "No nodes left cordoned",
+     "value": "0"
+    }
+   ],
+   "collected_at": "2026-11-13T04:00:00Z",
+   "components": {
+    "cluster": {
+     "fail": 0,
+     "ok": 15,
+     "status": "ok",
+     "unknown": 0,
+     "warn": 0
+    },
+    "platform": {
+     "fail": 0,
+     "ok": 23,
+     "status": "ok",
+     "unknown": 0,
+     "warn": 0
+    }
+   },
+   "details": {
+    "alerts": {
+     "aap_namespace": [],
+     "critical": [],
+     "warning": []
+    },
+    "certs": [
+     {
+      "days_left": 365.7,
+      "host": "localhost",
+      "issuer": "commonName=localhost, organizationName=AAP Health Mock",
+      "not_after": "2027-11-13T20:00:39Z",
+      "route": "aap"
+     },
+     {
+      "days_left": 365.7,
+      "host": "localhost",
+      "issuer": "commonName=localhost, organizationName=AAP Health Mock",
+      "not_after": "2027-11-13T20:00:39Z",
+      "route": "aap-controller"
+     },
+     {
+      "days_left": 365.7,
+      "host": "localhost",
+      "issuer": "commonName=localhost, organizationName=AAP Health Mock",
+      "not_after": "2027-11-13T20:00:39Z",
+      "route": "aap-hub"
+     },
+     {
+      "days_left": 365.7,
+      "host": "localhost",
+      "issuer": "commonName=localhost, organizationName=AAP Health Mock",
+      "not_after": "2027-11-13T20:00:39Z",
+      "route": "aap-eda"
+     }
+    ],
+    "component_crs": [
+     {
+      "detail": "Successful",
+      "kind": "automationcontrollers",
+      "name": "aap-controller",
+      "status": "ok",
+      "version": "2.6"
+     },
+     {
+      "detail": "Successful",
+      "kind": "edas",
+      "name": "aap-eda",
+      "status": "ok",
+      "version": "2.6"
+     },
+     {
+      "detail": "Successful",
+      "kind": "automationhubs",
+      "name": "aap-hub",
+      "status": "ok",
+      "version": "2.6"
+     }
+    ],
+    "event_reasons": [
+     [
+      "Unhealthy",
+      4
+     ],
+     [
+      "BackOff",
+      1
+     ]
+    ],
+    "nodes": [
+     {
+      "aap": false,
+      "cpu": 15.5,
+      "cpu_pct": 58.3,
+      "kubelet": "v1.31.9",
+      "mem_gib": 63.0,
+      "mem_pct": 44.2,
+      "node": "prod-master-0.<domain>",
+      "pressure": "",
+      "ready": true,
+      "roles": "master",
+      "unschedulable": false
+     },
+     {
+      "aap": false,
+      "cpu": 15.5,
+      "cpu_pct": 42.4,
+      "kubelet": "v1.31.9",
+      "mem_gib": 63.0,
+      "mem_pct": 43.4,
+      "node": "prod-master-1.<domain>",
+      "pressure": "",
+      "ready": true,
+      "roles": "master",
+      "unschedulable": false
+     },
+     {
+      "aap": false,
+      "cpu": 15.5,
+      "cpu_pct": 32.0,
+      "kubelet": "v1.31.9",
+      "mem_gib": 63.0,
+      "mem_pct": 46.9,
+      "node": "prod-master-2.<domain>",
+      "pressure": "",
+      "ready": true,
+      "roles": "master",
+      "unschedulable": false
+     },
+     {
+      "aap": true,
+      "cpu": 15.5,
+      "cpu_pct": 43.9,
+      "kubelet": "v1.31.9",
+      "mem_gib": 63.0,
+      "mem_pct": 56.1,
+      "node": "prod-worker-0.<domain>",
+      "pressure": "",
+      "ready": true,
+      "roles": "worker",
+      "unschedulable": false
+     },
+     {
+      "aap": true,
+      "cpu": 15.5,
+      "cpu_pct": 33.7,
+      "kubelet": "v1.31.9",
+      "mem_gib": 63.0,
+      "mem_pct": 49.7,
+      "node": "prod-worker-1.<domain>",
+      "pressure": "",
+      "ready": true,
+      "roles": "worker",
+      "unschedulable": false
+     },
+     {
+      "aap": true,
+      "cpu": 15.5,
+      "cpu_pct": 29.1,
+      "kubelet": "v1.31.9",
+      "mem_gib": 63.0,
+      "mem_pct": 57.9,
+      "node": "prod-worker-2.<domain>",
+      "pressure": "",
+      "ready": true,
+      "roles": "worker",
+      "unschedulable": false
+     }
+    ],
+    "pod_restarts": {
+     "aap-controller-task-7f9c8d6b5-x0q5": 0,
+     "aap-controller-task-7f9c8d6b5-x1q5": 0,
+     "aap-controller-web-7f9c8d6b5-x0q4": 0,
+     "aap-controller-web-7f9c8d6b5-x1q4": 0,
+     "aap-eda-activation-worker-7f9c8d6b5-x0q4": 0,
+     "aap-eda-activation-worker-7f9c8d6b5-x1q4": 0,
+     "aap-eda-api-7f9c8d6b5-x0q4": 0,
+     "aap-eda-default-worker-7f9c8d6b5-x0q1": 0,
+     "aap-eda-scheduler-7f9c8d6b5-x0q3": 0,
+     "aap-gateway-7f9c8d6b5-x0q4": 0,
+     "aap-gateway-7f9c8d6b5-x1q4": 0,
+     "aap-gateway-operator-controller-manager-7f9c8d6b5-x0q4": 0,
+     "aap-hub-api-7f9c8d6b5-x0q4": 0,
+     "aap-hub-content-7f9c8d6b5-x0q1": 0,
+     "aap-hub-content-7f9c8d6b5-x1q1": 0,
+     "aap-hub-worker-7f9c8d6b5-x0q0": 35,
+     "aap-hub-worker-7f9c8d6b5-x1q0": 0,
+     "aap-postgres-15-0": 0,
+     "aap-redis-0": 0
+    },
+    "pods": [
+     {
+      "component": "controller",
+      "node": "prod-worker-1.<domain>",
+      "phase": "Running",
+      "pod": "aap-controller-task-7f9c8d6b5-x0q5",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "controller",
+      "node": "prod-worker-2.<domain>",
+      "phase": "Running",
+      "pod": "aap-controller-task-7f9c8d6b5-x1q5",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "controller",
+      "node": "prod-worker-0.<domain>",
+      "phase": "Running",
+      "pod": "aap-controller-web-7f9c8d6b5-x0q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "controller",
+      "node": "prod-worker-1.<domain>",
+      "phase": "Running",
+      "pod": "aap-controller-web-7f9c8d6b5-x1q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "eda",
+      "node": "prod-worker-1.<domain>",
+      "phase": "Running",
+      "pod": "aap-eda-activation-worker-7f9c8d6b5-x0q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "eda",
+      "node": "prod-worker-2.<domain>",
+      "phase": "Running",
+      "pod": "aap-eda-activation-worker-7f9c8d6b5-x1q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "eda",
+      "node": "prod-worker-2.<domain>",
+      "phase": "Running",
+      "pod": "aap-eda-api-7f9c8d6b5-x0q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "eda",
+      "node": "prod-worker-1.<domain>",
+      "phase": "Running",
+      "pod": "aap-eda-default-worker-7f9c8d6b5-x0q1",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "eda",
+      "node": "prod-worker-2.<domain>",
+      "phase": "Running",
+      "pod": "aap-eda-scheduler-7f9c8d6b5-x0q3",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "gateway",
+      "node": "prod-worker-2.<domain>",
+      "phase": "Running",
+      "pod": "aap-gateway-7f9c8d6b5-x0q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "gateway",
+      "node": "prod-worker-0.<domain>",
+      "phase": "Running",
+      "pod": "aap-gateway-7f9c8d6b5-x1q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "hub",
+      "node": "prod-worker-2.<domain>",
+      "phase": "Running",
+      "pod": "aap-hub-api-7f9c8d6b5-x0q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "hub",
+      "node": "prod-worker-0.<domain>",
+      "phase": "Running",
+      "pod": "aap-hub-content-7f9c8d6b5-x0q1",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "hub",
+      "node": "prod-worker-1.<domain>",
+      "phase": "Running",
+      "pod": "aap-hub-content-7f9c8d6b5-x1q1",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "hub",
+      "node": "prod-worker-2.<domain>",
+      "phase": "Running",
+      "pod": "aap-hub-worker-7f9c8d6b5-x0q0",
+      "ready": true,
+      "restarts": 35,
+      "restarts_delta": 0
+     },
+     {
+      "component": "hub",
+      "node": "prod-worker-0.<domain>",
+      "phase": "Running",
+      "pod": "aap-hub-worker-7f9c8d6b5-x1q0",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "operator",
+      "node": "prod-worker-0.<domain>",
+      "phase": "Running",
+      "pod": "aap-gateway-operator-controller-manager-7f9c8d6b5-x0q4",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "postgres",
+      "node": "prod-worker-0.<domain>",
+      "phase": "Running",
+      "pod": "aap-postgres-15-0",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     },
+     {
+      "component": "redis",
+      "node": "prod-worker-0.<domain>",
+      "phase": "Running",
+      "pod": "aap-redis-0",
+      "ready": true,
+      "restarts": 0,
+      "restarts_delta": 0
+     }
+    ],
+    "pvcs": [
+     {
+      "capacity_gib": 50.0,
+      "modes": "ReadWriteOnce",
+      "phase": "Bound",
+      "pvc": "postgres-15-aap-postgres-15-0",
+      "storage_class": "ocs-storagecluster-ceph-rbd",
+      "used_pct": 73.6
+     },
+     {
+      "capacity_gib": 500.0,
+      "modes": "ReadWriteMany",
+      "phase": "Bound",
+      "pvc": "aap-hub-file-storage",
+      "storage_class": "ocs-storagecluster-cephfs",
+      "used_pct": 50.0
+     },
+     {
+      "capacity_gib": 1.0,
+      "modes": "ReadWriteOnce",
+      "phase": "Bound",
+      "pvc": "aap-redis-data",
+      "storage_class": null,
+      "used_pct": 10.0
+     }
+    ],
+    "usage": [
+     {
+      "container": "worker",
+      "cpu_m": 338,
+      "mem_limit_pct": 68.3,
+      "mem_mib": 1398,
+      "pod": "aap-eda-activation-worker-7f9c8d6b5-x0q4"
+     },
+     {
+      "container": "worker",
+      "cpu_m": 476,
+      "mem_limit_pct": 66.1,
+      "mem_mib": 1353,
+      "pod": "aap-hub-worker-7f9c8d6b5-x1q0"
+     },
+     {
+      "container": "manager",
+      "cpu_m": 188,
+      "mem_limit_pct": 64.6,
+      "mem_mib": 1324,
+      "pod": "aap-gateway-operator-controller-manager-7f9c8d6b5-x0q4"
+     },
+     {
+      "container": "web",
+      "cpu_m": 366,
+      "mem_limit_pct": 61.5,
+      "mem_mib": 1259,
+      "pod": "aap-controller-web-7f9c8d6b5-x1q4"
+     },
+     {
+      "container": "worker",
+      "cpu_m": 187,
+      "mem_limit_pct": 60.4,
+      "mem_mib": 1238,
+      "pod": "aap-eda-activation-worker-7f9c8d6b5-x1q4"
+     },
+     {
+      "container": "api",
+      "cpu_m": 27,
+      "mem_limit_pct": 59.4,
+      "mem_mib": 1217,
+      "pod": "aap-eda-api-7f9c8d6b5-x0q4"
+     },
+     {
+      "container": "worker",
+      "cpu_m": 418,
+      "mem_limit_pct": 56.3,
+      "mem_mib": 1153,
+      "pod": "aap-eda-default-worker-7f9c8d6b5-x0q1"
+     },
+     {
+      "container": "content",
+      "cpu_m": 157,
+      "mem_limit_pct": 54.9,
+      "mem_mib": 1125,
+      "pod": "aap-hub-content-7f9c8d6b5-x1q1"
+     },
+     {
+      "container": "redis",
+      "cpu_m": 190,
+      "mem_limit_pct": 54.5,
+      "mem_mib": 1117,
+      "pod": "aap-redis-0"
+     },
+     {
+      "container": "postgres",
+      "cpu_m": 196,
+      "mem_limit_pct": 47.3,
+      "mem_mib": 968,
+      "pod": "aap-postgres-15-0"
+     },
+     {
+      "container": "web",
+      "cpu_m": 114,
+      "mem_limit_pct": 45.4,
+      "mem_mib": 929,
+      "pod": "aap-controller-web-7f9c8d6b5-x0q4"
+     },
+     {
+      "container": "task",
+      "cpu_m": 390,
+      "mem_limit_pct": 45.1,
+      "mem_mib": 924,
+      "pod": "aap-controller-task-7f9c8d6b5-x0q5"
+     },
+     {
+      "container": "task",
+      "cpu_m": 488,
+      "mem_limit_pct": 44.2,
+      "mem_mib": 906,
+      "pod": "aap-controller-task-7f9c8d6b5-x1q5"
+     },
+     {
+      "container": "worker",
+      "cpu_m": 311,
+      "mem_limit_pct": 44.1,
+      "mem_mib": 904,
+      "pod": "aap-hub-worker-7f9c8d6b5-x0q0"
+     },
+     {
+      "container": "content",
+      "cpu_m": 64,
+      "mem_limit_pct": 40.0,
+      "mem_mib": 819,
+      "pod": "aap-hub-content-7f9c8d6b5-x0q1"
+     },
+     {
+      "container": "api",
+      "cpu_m": 437,
+      "mem_limit_pct": 35.5,
+      "mem_mib": 727,
+      "pod": "aap-hub-api-7f9c8d6b5-x0q4"
+     },
+     {
+      "container": "scheduler",
+      "cpu_m": 401,
+      "mem_limit_pct": 34.9,
+      "mem_mib": 714,
+      "pod": "aap-eda-scheduler-7f9c8d6b5-x0q3"
+     },
+     {
+      "container": "gateway",
+      "cpu_m": 429,
+      "mem_limit_pct": 31.9,
+      "mem_mib": 653,
+      "pod": "aap-gateway-7f9c8d6b5-x1q4"
+     },
+     {
+      "container": "gateway",
+      "cpu_m": 319,
+      "mem_limit_pct": 28.2,
+      "mem_mib": 578,
+      "pod": "aap-gateway-7f9c8d6b5-x0q4"
+     }
+    ]
+   },
+   "errors": [],
+   "headline": [
+    [
+     "Critical alerts",
+     "0"
+    ],
+    [
+     "AAP pods not ready",
+     "0"
+    ],
+    [
+     "Pod restarts",
+     "0"
+    ],
+    [
+     "Last backup",
+     "2 h"
+    ],
+    [
+     "Min cert days",
+     "365.7"
+    ],
+    [
+     "OpenShift",
+     "4.18.25"
+    ]
+   ],
+   "info": {
+    "aap_cr_spec": {
+     "api": {
+      "replicas": 2
+     },
+     "controller": {
+      "replicas": 2
+     },
+     "database": {
+      "database_secret": "external-postgres"
+     }
+    },
+    "database": "external",
+    "db_pvc_gib": 50.0,
+    "ocp_channel": "stable-4.18",
+    "ocp_version": "4.18.25",
+    "operator_channel": "stable-2.6",
+    "operator_version": "2.6.0+0.1761234567"
+   },
+   "label": "Production",
+   "metrics": {
+    "checks_fail": 0,
+    "checks_ok": 38,
+    "checks_unknown": 0,
+    "checks_warn": 0,
+    "health_score": 100.0,
+    "ocp.alerts_aap_ns": 0,
+    "ocp.alerts_critical": 0,
+    "ocp.alerts_warning": 0,
+    "ocp.backup_age_h": 2.0,
+    "ocp.cert_min_days": 365.7,
+    "ocp.co_degraded": 0,
+    "ocp.cpu_cores": 5.5,
+    "ocp.cpu_throttle_max_pct": 5.0,
+    "ocp.csr_pending": 0,
+    "ocp.db_pvc_used_pct": 73.6,
+    "ocp.etcd_commit_p99_ms": 8.95,
+    "ocp.etcd_fsync_p99_ms": 3.8,
+    "ocp.etcd_leader_changes_24h": 0,
+    "ocp.etcd_peer_rtt_p99_ms": 6.63,
+    "ocp.mem_gib": 18.85,
+    "ocp.node_cpu_max_pct": 58.3,
+    "ocp.node_mem_max_pct": 57.9,
+    "ocp.nodes": 6,
+    "ocp.nodes_not_ready": 0,
+    "ocp.oomkilled_24h": 0,
+    "ocp.pod_restarts_24h": 0,
+    "ocp.pods": 19,
+    "ocp.pods_not_ready": 0,
+    "ocp.pvc_max_used_pct": 73.6,
+    "ocp.updates_available": 1,
+    "ocp.warning_events_24h": 5,
+    "ocp.workloads_degraded": 0,
+    "open_critical": 0
+   },
+   "name": "prod",
+   "score": 100.0,
+   "status": "green",
+   "tier": "prod"
+  }
+ ],
+ "generated": "2026-11-13T04:00:00Z",
+ "version": "2.0.0"
+}
