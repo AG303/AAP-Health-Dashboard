@@ -1,0 +1,176 @@
+---
+# Read-only identity for the AAP health dashboard.
+# Every rule below grants only get / list / watch. Nothing can create, update, patch, delete,
+# exec into pods, read Secrets or read ConfigMaps.
+#
+# Apply once per cluster (edit the AAP namespace if it is not "aap"):
+#   oc apply -f deploy/openshift/rbac.yaml
+#   oc -n aap-health get secret aap-health-reader-token -o jsonpath='{.data.token}' | base64 -d
+# Store that token as the GitHub secret named by ocp_token_env (and prometheus_token_env if separate).
+#
+# Prometheus / Thanos querier URL for prometheus_url:
+#   https://$(oc -n openshift-monitoring get route thanos-querier -o jsonpath='{.spec.host}')
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aap-health
+  labels:
+    app.kubernetes.io/part-of: aap-health-dashboard
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: aap-health-reader
+  namespace: aap-health
+  labels:
+    app.kubernetes.io/part-of: aap-health-dashboard
+---
+# Long-lived token. Rotate by deleting the Secret; the token controller issues a new one.
+# Prefer `oc create token aap-health-reader -n aap-health --duration=2160h` if your policy
+# requires expiring tokens (then rotate the GitHub secret on that cadence).
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aap-health-reader-token
+  namespace: aap-health
+  annotations:
+    kubernetes.io/service-account.name: aap-health-reader
+type: kubernetes.io/service-account-token
+---
+# Namespace scope: the AAP namespace. Explicit list instead of the built-in "view" role so that
+# the AAP custom resources are readable even when the operator does not aggregate into "view",
+# and so that Secrets and ConfigMaps are deliberately excluded.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: aap-health-reader
+  namespace: aap
+  labels:
+    app.kubernetes.io/part-of: aap-health-dashboard
+rules:
+  - apiGroups: [""]
+    resources: [pods, persistentvolumeclaims, events, resourcequotas, services, endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments, statefulsets, replicasets]
+    verbs: [get, list, watch]
+  - apiGroups: [policy]
+    resources: [poddisruptionbudgets]
+    verbs: [get, list, watch]
+  - apiGroups: [route.openshift.io]
+    resources: [routes]
+    verbs: [get, list, watch]
+  - apiGroups: [metrics.k8s.io]
+    resources: [pods]
+    verbs: [get, list]
+  - apiGroups: [operators.coreos.com]
+    resources: [clusterserviceversions, subscriptions, installplans]
+    verbs: [get, list, watch]
+  - apiGroups: [aap.ansible.com]
+    resources: [ansibleautomationplatforms, ansibleautomationplatformbackups]
+    verbs: [get, list, watch]
+  - apiGroups: [automationcontroller.ansible.com]
+    resources: [automationcontrollers, automationcontrollerbackups]
+    verbs: [get, list, watch]
+  - apiGroups: [eda.ansible.com]
+    resources: [edas, edabackups]
+    verbs: [get, list, watch]
+  - apiGroups: [automationhub.ansible.com]
+    resources: [automationhubs, automationhubbackups]
+    verbs: [get, list, watch]
+  - apiGroups: [lightspeed.ansible.com]
+    resources: [ansiblelightspeeds]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: aap-health-reader
+  namespace: aap
+subjects:
+  - kind: ServiceAccount
+    name: aap-health-reader
+    namespace: aap-health
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: aap-health-reader
+---
+# Cluster scope: only the objects the cluster checks read. Optional - set
+# "cluster_checks": false for an environment if the platform team will not grant it; those checks
+# then show as "unknown" instead of failing.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aap-health-cluster-reader
+  labels:
+    app.kubernetes.io/part-of: aap-health-dashboard
+rules:
+  - apiGroups: [config.openshift.io]
+    resources: [clusterversions, clusteroperators]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [nodes]
+    verbs: [get, list, watch]
+  - apiGroups: [metrics.k8s.io]
+    resources: [nodes]
+    verbs: [get, list]
+  - apiGroups: [machineconfiguration.openshift.io]
+    resources: [machineconfigpools]
+    verbs: [get, list, watch]
+  - apiGroups: [certificates.k8s.io]
+    resources: [certificatesigningrequests]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aap-health-cluster-reader
+subjects:
+  - kind: ServiceAccount
+    name: aap-health-reader
+    namespace: aap-health
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aap-health-cluster-reader
+---
+# etcd member pod status (openshift-etcd namespace, pods only).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: aap-health-etcd-pod-reader
+  namespace: openshift-etcd
+rules:
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: aap-health-etcd-pod-reader
+  namespace: openshift-etcd
+subjects:
+  - kind: ServiceAccount
+    name: aap-health-reader
+    namespace: aap-health
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: aap-health-etcd-pod-reader
+---
+# Prometheus / Thanos querier read access (firing alerts, etcd latency, PVC usage, CPU throttling).
+# cluster-monitoring-view is the built-in read-only monitoring role in OpenShift.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aap-health-cluster-monitoring-view
+subjects:
+  - kind: ServiceAccount
+    name: aap-health-reader
+    namespace: aap-health
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-monitoring-view

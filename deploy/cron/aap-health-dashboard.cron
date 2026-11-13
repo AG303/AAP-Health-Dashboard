@@ -1,0 +1,7 @@
+# /etc/cron.d/aap-health-dashboard - alternative to GitHub Actions.
+# Runs at 23:00 server local time (set the host to America/Chicago), writes the static site into a
+# web root that any web server (or an OpenShift httpd pod with a PVC) serves read-only.
+# /opt/aap-health/.env holds the read-only tokens, mode 0600, owned by the aaphealth user:
+#   export AAP_TOKEN_PROD=...  OCP_TOKEN_PROD=...
+CRON_TZ=America/Chicago
+0 23 * * * aaphealth cd /opt/aap-health && . ./.env && /usr/bin/python3 aap_health_dashboard.py -c environments.json -o /var/www/html/aap-health --redact -q >> /var/log/aap-health/run.log 2>&1

@@ -1,0 +1,144 @@
+---
+# Daily AAP 2.6 / OpenShift health dashboard -> GitHub Pages (gh-pages branch).
+#
+# One-time setup (docs/SETUP.md):
+#   1. Secrets: one read-only token per environment, named exactly as aap_token_env / ocp_token_env
+#      in environments.json (for example AAP_TOKEN_PROD, OCP_TOKEN_PROD).
+#   2. Config: commit environments.json (URLs only, no secrets) or put it in the repository
+#      variable AAP_HEALTH_CONFIG_JSON.
+#   3. Runner: a self-hosted runner that can reach the AAP routes and OpenShift API
+#      (default labels self-hosted, linux, aap-health; override with variable AAP_HEALTH_RUNS_ON).
+#   4. Settings > Pages > Build and deployment: Deploy from a branch, gh-pages, / (root).
+name: AAP health dashboard
+
+"on":
+  schedule:
+    # 04:00 UTC = 22:00 CST / 23:00 CDT - end of the business day in Austin, same local date.
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+    inputs:
+      fail_on:
+        description: "Fail the run when an environment is at this status or worse (blank = never)"
+        required: false
+        default: ""
+        type: choice
+        options: ["", "fail", "warn"]
+      redact:
+        description: "Mask hostnames, URLs and IPs in the published site"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aap-health-dashboard
+  cancel-in-progress: false
+
+jobs:
+  dashboard:
+    runs-on: ${{ fromJSON(vars.AAP_HEALTH_RUNS_ON || '["self-hosted","linux","aap-health"]') }}
+    timeout-minutes: 30
+    env:
+      PAGES_BRANCH: gh-pages
+    steps:
+      - name: Check out the dashboard code
+        uses: actions/checkout@v4
+
+      - name: Check out the published site (history lives here)
+        run: |
+          set -euo pipefail
+          rm -rf site
+          if git ls-remote --exit-code --heads origin "$PAGES_BRANCH" >/dev/null 2>&1; then
+            git fetch --depth 1 origin "$PAGES_BRANCH"
+            git worktree add site "origin/$PAGES_BRANCH"
+          else
+            echo "No $PAGES_BRANCH branch yet - starting with empty history"
+            mkdir -p site
+          fi
+
+      - name: Python version
+        run: python3 --version
+
+      - name: Write config from repository variable (optional)
+        env:
+          CONFIG_JSON: ${{ vars.AAP_HEALTH_CONFIG_JSON }}
+        run: |
+          set -euo pipefail
+          if [ -n "${CONFIG_JSON}" ]; then
+            printf '%s' "${CONFIG_JSON}" > environments.json
+          fi
+          test -f environments.json || { echo "environments.json missing"; exit 2; }
+          python3 -c "import json; c=json.load(open('environments.json')); print([e['name'] for e in c['environments']])"
+
+      - name: Collect health checks and render the site
+        id: run
+        env:
+          # Every secret is exposed to the script as JSON; it only reads the names listed in
+          # environments.json. Tokens are never written to the site.
+          AAP_HEALTH_SECRETS_JSON: ${{ toJSON(secrets) }}
+          FAIL_ON: ${{ inputs.fail_on }}
+          REDACT: ${{ github.event_name == 'schedule' && (vars.AAP_HEALTH_REDACT || 'true') || inputs.redact }}
+        run: |
+          set -uo pipefail
+          args=(-c environments.json -o site)
+          [ "${REDACT}" = "true" ] && args+=(--redact)
+          [ -n "${FAIL_ON}" ] && args+=(--fail-on "${FAIL_ON}")
+          python3 aap_health_dashboard.py "${args[@]}"
+          rc=$?
+          echo "rc=${rc}" >> "$GITHUB_OUTPUT"
+          # 0 = all collected, 1 = partial (still publish), 2 = nothing collected, 3 = --fail-on tripped
+          if [ "${rc}" -eq 2 ]; then exit 2; fi
+          exit 0
+
+      - name: Job summary
+        if: always()
+        run: |
+          if [ -f site/data/latest.json ]; then
+            python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d = json.load(open("site/data/latest.json"))
+          print("### AAP health %s\n" % d["date"])
+          print("| Environment | Status | Score | Fail | Warn |\n|---|---|---|---|---|")
+          for e in d["environments"]:
+              m = e["metrics"]
+              print("| %s | %s | %s | %s | %s |" % (e["label"], e["status"], e["score"], m.get("checks_fail"), m.get("checks_warn")))
+          PY
+          fi
+
+      - name: Publish to the gh-pages branch
+        run: |
+          set -euo pipefail
+          # One fresh single-commit repo per run keeps the branch small; history.json and
+          # data/snapshots/ carry the trend data, so git history is not needed.
+          rm -rf "${RUNNER_TEMP}/publish" && mkdir -p "${RUNNER_TEMP}/publish"
+          tar -C site --exclude=.git -cf - . | tar -C "${RUNNER_TEMP}/publish" -xf -
+          cd "${RUNNER_TEMP}/publish"
+          git init -q -b "${PAGES_BRANCH}"
+          git config user.name "aap-health-bot"
+          git config user.email "aap-health-bot@users.noreply.github.com"
+          git add -A
+          git commit -q -m "AAP health dashboard $(date -u +%Y-%m-%d) (run ${GITHUB_RUN_ID})"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "HEAD:refs/heads/${PAGES_BRANCH}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Keep a copy of the site as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aap-health-site-${{ github.run_id }}
+          path: site
+          include-hidden-files: true
+          retention-days: 14
+
+      - name: Fail when platform health gate tripped
+        if: steps.run.outputs.rc == '3'
+        run: |
+          echo "::error::An environment is at or below the --fail-on status (${{ inputs.fail_on }})"
+          exit 1
+
+      - name: Clean up worktree
+        if: always()
+        run: git worktree prune || true

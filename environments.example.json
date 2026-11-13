@@ -1,0 +1,85 @@
+{
+  "dashboard_title": "AAP 2.6 Platform Health",
+  "report_tz": "America/Chicago",
+  "redact": false,
+  "kpi_targets": {
+    "health_score": 90,
+    "job_success_pct": 95,
+    "green_days_pct": 90,
+    "capacity_used_pct": 80,
+    "license_days_left": 60,
+    "backup_age_h": 26,
+    "cert_min_days": 30,
+    "open_critical": 0
+  },
+  "thresholds": {
+    "job_success_warn_pct": 95,
+    "job_success_fail_pct": 85,
+    "pending_warn_min": 10,
+    "pending_fail_min": 30,
+    "event_lag_warn_s": 10,
+    "event_lag_fail_s": 60,
+    "backup_warn_h": 26,
+    "backup_fail_h": 72,
+    "etcd_fsync_warn_ms": 10,
+    "etcd_fsync_fail_ms": 20
+  },
+  "settings": {
+    "minutes_saved_per_job": 15,
+    "cluster_checks": true,
+    "check_route_certs": true,
+    "excluded_alerts": [
+      "Watchdog",
+      "AlertmanagerReceiversNotConfigured",
+      "InfoInhibitor"
+    ]
+  },
+  "environments": [
+    {
+      "name": "prod",
+      "label": "Production",
+      "tier": "prod",
+      "aap_url": "https://aap.apps.prod-ocp.example.com",
+      "aap_token_env": "AAP_TOKEN_PROD",
+      "ocp_api_url": "https://api.prod-ocp.example.com:6443",
+      "ocp_token_env": "OCP_TOKEN_PROD",
+      "prometheus_url": "https://thanos-querier-openshift-monitoring.apps.prod-ocp.example.com",
+      "namespace": "aap",
+      "aap_cr_name": "aap",
+      "operator_namespace": "aap",
+      "verify_tls": true,
+      "ca_bundle": "/etc/pki/tls/certs/corp-ca-bundle.pem"
+    },
+    {
+      "name": "nonprod",
+      "label": "Non-production",
+      "tier": "nonprod",
+      "aap_url": "https://aap.apps.np-ocp.example.com",
+      "aap_token_env": "AAP_TOKEN_NONPROD",
+      "ocp_api_url": "https://api.np-ocp.example.com:6443",
+      "ocp_token_env": "OCP_TOKEN_NONPROD",
+      "prometheus_url": "https://thanos-querier-openshift-monitoring.apps.np-ocp.example.com",
+      "namespace": "aap",
+      "aap_cr_name": "aap",
+      "thresholds": {
+        "job_success_warn_pct": 90,
+        "job_success_fail_pct": 75,
+        "backup_warn_h": 50
+      }
+    },
+    {
+      "name": "dev",
+      "label": "Development",
+      "tier": "dev",
+      "aap_url": "https://aap.apps.dev-ocp.example.com",
+      "aap_token_env": "AAP_TOKEN_DEV",
+      "ocp_api_url": "https://api.dev-ocp.example.com:6443",
+      "ocp_token_env": "OCP_TOKEN_DEV",
+      "namespace": "aap-dev",
+      "aap_cr_name": "aap",
+      "hub_enabled": false,
+      "cluster_checks": false,
+      "check_route_certs": true
+    }
+  ]
+}
